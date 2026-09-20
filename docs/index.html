@@ -88,41 +88,39 @@
       background:#0d1117;
       box-shadow:0 18px 60px rgba(16,24,40,.13);
     }
-    .hero video{
-      display:block;
-      width:100%;
-      max-height:720px;
-      object-fit:contain;
+    .hero-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:2px;
       background:#0d1117;
     }
-    .switcher{
-      display:flex;
-      justify-content:center;
-      gap:8px;
-      flex-wrap:wrap;
-      margin:14px 0 0;
+    .hero-cell{
+      position:relative;
+      overflow:hidden;
+      background:#0d1117;
+      aspect-ratio:16 / 10;
     }
-    .switcher button{
-      appearance:none;
-      border:1px solid var(--line);
+    .hero-cell video{
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#0d1117;
+    }
+    .hero-label{
+      position:absolute;
+      left:12px;
+      bottom:10px;
+      padding:5px 9px;
       border-radius:999px;
-      padding:8px 14px;
-      background:#fff;
-      color:#344054;
-      font:inherit;
-      font-size:14px;
-      cursor:pointer;
-    }
-    .switcher button.active{
-      background:var(--ink);
-      border-color:var(--ink);
+      background:rgba(13,17,23,.70);
       color:#fff;
-    }
-    .hero-note{
-      text-align:center;
-      margin:10px 0 0;
-      color:var(--muted);
-      font-size:13px;
+      font-size:12px;
+      font-weight:650;
+      letter-spacing:.01em;
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+      pointer-events:none;
     }
     section{padding:72px 0;border-top:1px solid var(--line)}
     section:first-of-type{border-top:0}
@@ -262,17 +260,33 @@
       <a class="button" href="annotation_example.md">Annotation details</a>
     </div>
 
-    <div class="hero" aria-label="Autoplay garment simulation">
-      <video id="heroVideo" autoplay muted loop playsinline preload="auto" poster="assets/simulation/dress_showcase_grid.png">
-        <source id="heroSource" src="assets/simulation/dress_rollout.mp4" type="video/mp4">
-        Your browser does not support HTML5 video.
-      </video>
-    </div>
-    <div class="switcher" aria-label="Simulation selector">
-      <button class="active" data-src="assets/simulation/dress_rollout.mp4" data-poster="assets/simulation/dress_showcase_grid.png">Dress</button>
-      <button data-src="assets/simulation/pants_rollout.mp4" data-poster="assets/simulation/pants_showcase_grid.png">Pants</button>
-      <button data-src="assets/simulation/skirt_rollout.mp4" data-poster="assets/simulation/skirt_showcase_grid.png">Skirt</button>
-      <button data-src="assets/simulation/top_rollout.mp4" data-poster="assets/simulation/top_showcase_grid.png">Top</button>
+    <div class="hero" aria-label="Synchronized garment simulations">
+      <div class="hero-grid">
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/simulation/dress_showcase_grid.png">
+            <source src="assets/simulation/dress_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Dress</span>
+        </div>
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/simulation/pants_showcase_grid.png">
+            <source src="assets/simulation/pants_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Pants</span>
+        </div>
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/simulation/skirt_showcase_grid.png">
+            <source src="assets/simulation/skirt_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Skirt</span>
+        </div>
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/simulation/top_showcase_grid.png">
+            <source src="assets/simulation/top_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Top</span>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -389,28 +403,39 @@
   </footer>
 
   <script>
-    const video = document.getElementById('heroVideo');
-    const source = document.getElementById('heroSource');
-    const buttons = document.querySelectorAll('.switcher button');
+    const heroVideos = Array.from(document.querySelectorAll('.hero-video'));
 
-    buttons.forEach((button) => {
-      button.addEventListener('click', async () => {
-        buttons.forEach((b) => b.classList.remove('active'));
-        button.classList.add('active');
-        source.src = button.dataset.src;
-        video.poster = button.dataset.poster;
-        video.load();
-        try {
-          await video.play();
-        } catch (_) {
-          // Browsers may block autoplay in some environments; the poster remains visible.
+    async function startTogether() {
+      heroVideos.forEach((video) => {
+        video.muted = true;
+        video.currentTime = 0;
+      });
+      await Promise.allSettled(heroVideos.map((video) => video.play()));
+    }
+
+    Promise.all(
+      heroVideos.map((video) => new Promise((resolve) => {
+        if (video.readyState >= 3) {
+          resolve();
+        } else {
+          video.addEventListener('canplay', resolve, { once: true });
+        }
+      }))
+    ).then(startTogether);
+
+    // Keep small startup/network timing differences from accumulating.
+    setInterval(() => {
+      const master = heroVideos[0];
+      if (!master || master.paused || master.readyState < 2) return;
+
+      heroVideos.slice(1).forEach((video) => {
+        if (video.readyState < 2 || video.paused || !Number.isFinite(video.duration)) return;
+        const target = master.currentTime % video.duration;
+        if (Math.abs(video.currentTime - target) > 0.15) {
+          video.currentTime = target;
         }
       });
-    });
-
-    // Autoplay is most reliable when the video is muted and plays inline.
-    video.muted = true;
-    video.play().catch(() => {});
+    }, 1000);
   </script>
 </body>
 </html>
