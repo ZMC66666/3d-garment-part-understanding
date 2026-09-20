@@ -266,7 +266,7 @@
           <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/simulation/dress_showcase_grid.png">
             <source src="assets/simulation/dress_rollout.mp4" type="video/mp4">
           </video>
-          <span class="hero-label">Dress</span>
+          <span class="hero-label">Dresses</span>
         </div>
         <div class="hero-cell">
           <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/simulation/pants_showcase_grid.png">
@@ -278,13 +278,13 @@
           <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/simulation/skirt_showcase_grid.png">
             <source src="assets/simulation/skirt_rollout.mp4" type="video/mp4">
           </video>
-          <span class="hero-label">Skirt</span>
+          <span class="hero-label">Skirts</span>
         </div>
         <div class="hero-cell">
           <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/simulation/top_showcase_grid.png">
             <source src="assets/simulation/top_rollout.mp4" type="video/mp4">
           </video>
-          <span class="hero-label">Top</span>
+          <span class="hero-label">Tops</span>
         </div>
       </div>
     </div>
@@ -423,19 +423,8 @@
       }))
     ).then(startTogether);
 
-    // Keep small startup/network timing differences from accumulating.
-    setInterval(() => {
-      const master = heroVideos[0];
-      if (!master || master.paused || master.readyState < 2) return;
-
-      heroVideos.slice(1).forEach((video) => {
-        if (video.readyState < 2 || video.paused || !Number.isFinite(video.duration)) return;
-        const target = master.currentTime % video.duration;
-        if (Math.abs(video.currentTime - target) > 0.15) {
-          video.currentTime = target;
-        }
-      });
-    }, 1000);
+    // Videos start together, then each plays its complete rollout independently.
+    // This avoids truncating longer clips when different categories have different durations.
   </script>
 </body>
 </html>
