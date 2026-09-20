@@ -258,21 +258,21 @@
     </div>
     <div class="actions">
       <a class="button primary" href="https://github.com/ZMC66666/3d-garment-part-understanding">GitHub</a>
-      <a class="button" href="../docs/evaluation_protocol.md">Evaluation protocol</a>
-      <a class="button" href="../docs/annotation_example.md">Annotation details</a>
+      <a class="button" href="evaluation_protocol.md">Evaluation protocol</a>
+      <a class="button" href="annotation_example.md">Annotation details</a>
     </div>
 
     <div class="hero" aria-label="Autoplay garment simulation">
-      <video id="heroVideo" autoplay muted loop playsinline preload="auto" poster="../assets/simulation/dress_showcase_grid.png">
-        <source id="heroSource" src="../assets/simulation/dress_rollout.mp4" type="video/mp4">
+      <video id="heroVideo" autoplay muted loop playsinline preload="auto" poster="assets/simulation/dress_showcase_grid.png">
+        <source id="heroSource" src="assets/simulation/dress_rollout.mp4" type="video/mp4">
         Your browser does not support HTML5 video.
       </video>
     </div>
     <div class="switcher" aria-label="Simulation selector">
-      <button class="active" data-src="../assets/simulation/dress_rollout.mp4" data-poster="../assets/simulation/dress_showcase_grid.png">Dress</button>
-      <button data-src="../assets/simulation/pants_rollout.mp4" data-poster="../assets/simulation/pants_showcase_grid.png">Pants</button>
-      <button data-src="../assets/simulation/skirt_rollout.mp4" data-poster="../assets/simulation/skirt_showcase_grid.png">Skirt</button>
-      <button data-src="../assets/simulation/top_rollout.mp4" data-poster="../assets/simulation/top_showcase_grid.png">Top</button>
+      <button class="active" data-src="assets/simulation/dress_rollout.mp4" data-poster="assets/simulation/dress_showcase_grid.png">Dress</button>
+      <button data-src="assets/simulation/pants_rollout.mp4" data-poster="assets/simulation/pants_showcase_grid.png">Pants</button>
+      <button data-src="assets/simulation/skirt_rollout.mp4" data-poster="assets/simulation/skirt_showcase_grid.png">Skirt</button>
+      <button data-src="assets/simulation/top_rollout.mp4" data-poster="assets/simulation/top_showcase_grid.png">Top</button>
     </div>
     <p class="hero-note">Autoplay is muted by design. Select a garment category to switch the rollout.</p>
   </header>
@@ -309,15 +309,15 @@
         </p>
         <div class="triptych">
           <figure>
-            <img src="../assets/segmentation/dresses_gt_semantic.png" alt="Ground-truth garment part segmentation">
+            <img src="assets/segmentation/dresses_gt_semantic.png" alt="Ground-truth garment part segmentation">
             <figcaption>Ground truth</figcaption>
           </figure>
           <figure>
-            <img src="../assets/segmentation/dresses_ptv3m1_semantic.png" alt="Point Transformer V3 baseline segmentation">
+            <img src="assets/segmentation/dresses_ptv3m1_semantic.png" alt="Point Transformer V3 baseline segmentation">
             <figcaption>PT-v3m1 baseline</figcaption>
           </figure>
           <figure>
-            <img src="../assets/segmentation/dresses_ours_semantic.png" alt="Our garment part segmentation">
+            <img src="assets/segmentation/dresses_ours_semantic.png" alt="Our garment part segmentation">
             <figcaption>Ours</figcaption>
           </figure>
         </div>
@@ -332,19 +332,19 @@
         </p>
         <div class="field-grid">
           <figure>
-            <img src="../assets/structural_fields/dress_pred_neckline.png" alt="Predicted neckline structural field">
+            <img src="assets/structural_fields/dress_pred_neckline.png" alt="Predicted neckline structural field">
             <figcaption>Neckline</figcaption>
           </figure>
           <figure>
-            <img src="../assets/structural_fields/dress_pred_waistline.png" alt="Predicted waistline structural field">
+            <img src="assets/structural_fields/dress_pred_waistline.png" alt="Predicted waistline structural field">
             <figcaption>Waistline</figcaption>
           </figure>
           <figure>
-            <img src="../assets/structural_fields/dress_pred_hemline.png" alt="Predicted hemline structural field">
+            <img src="assets/structural_fields/dress_pred_hemline.png" alt="Predicted hemline structural field">
             <figcaption>Hemline</figcaption>
           </figure>
           <figure>
-            <img src="../assets/structural_fields/dress_pred_cuff_union.png" alt="Predicted cuff structural field">
+            <img src="assets/structural_fields/dress_pred_cuff_union.png" alt="Predicted cuff structural field">
             <figcaption>Cuff</figcaption>
           </figure>
         </div>
@@ -358,7 +358,7 @@
           Predicted part semantics constrain anatomically valid correspondences, and predicted structural fields refine within-region placement.
         </p>
         <div class="figure">
-          <img src="../assets/alignment/alignment_ablation_signed_gap.png" alt="Garment-to-body alignment ablation with signed gap visualization">
+          <img src="assets/alignment/alignment_ablation_signed_gap.png" alt="Garment-to-body alignment ablation with signed gap visualization">
           <div class="caption">Signed-gap visualization for progressively stronger garment cues. Negative values indicate body penetration.</div>
         </div>
         <div class="metrics">
@@ -368,7 +368,7 @@
           <div class="metric"><strong>16.51%</strong><span>Penetration ↓</span></div>
         </div>
         <p class="small">
-          Alignment evaluation uses controlled region-specific subsets of the held-out test set. See the <a href="../docs/evaluation_protocol.md">evaluation protocol</a> for aggregation details.
+          Alignment evaluation uses controlled region-specific subsets of the held-out test set. See the <a href="evaluation_protocol.md">evaluation protocol</a> for aggregation details.
         </p>
       </div>
     </section>
