@@ -222,20 +222,42 @@
       font-weight:700;
       color:#067647;
     }
-    .field-grid{
+    .field-compare-grid{
       display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:10px;
-      margin-top:24px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+      margin-top:26px;
     }
-    .field-grid figure{
-      margin:0;
+    .field-card{
       border:1px solid var(--line);
-      border-radius:14px;
+      border-radius:16px;
       overflow:hidden;
+      background:#fff;
     }
-    .field-grid img{display:block;width:100%}
-    .field-grid figcaption{
+    .field-card h3{
+      margin:0;
+      padding:13px 16px;
+      font-size:17px;
+      text-align:center;
+      background:var(--panel);
+      border-bottom:1px solid var(--line);
+    }
+    .field-pair{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:1px;
+      background:var(--line);
+    }
+    .field-pair figure{
+      margin:0;
+      background:#fff;
+    }
+    .field-pair img{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+    .field-pair figcaption{
       padding:9px 10px;
       text-align:center;
       font-size:13px;
@@ -275,7 +297,7 @@
       header{padding-top:42px}
       .hero{border-radius:14px}
       .cards,.triptych,.metrics{grid-template-columns:1fr}
-      .field-grid{grid-template-columns:repeat(2,1fr)}
+      .field-compare-grid{grid-template-columns:1fr}
       section{padding:52px 0}
     }
   </style>
@@ -431,23 +453,62 @@
         <p class="lead">
           Discrete labels answer <strong>what part?</strong>; structural fields answer <strong>where within the garment structure?</strong> Distances follow mesh connectivity, remaining meaningful when folds bring unrelated surface regions close in Euclidean space.
         </p>
-        <div class="field-grid">
-          <figure>
-            <img src="assets/structural_fields/dress_pred_neckline.png" alt="Predicted neckline structural field">
-            <figcaption>Neckline</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/structural_fields/dress_pred_waistline.png" alt="Predicted waistline structural field">
-            <figcaption>Waistline</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/structural_fields/dress_pred_hemline.png" alt="Predicted hemline structural field">
-            <figcaption>Hemline</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/structural_fields/dress_pred_cuff_union.png" alt="Predicted cuff structural field">
-            <figcaption>Cuff</figcaption>
-          </figure>
+        <div class="field-compare-grid">
+          <div class="field-card">
+            <h3>Neckline</h3>
+            <div class="field-pair">
+              <figure>
+                <img src="assets/structural_fields/dress_gt_neckline.png" alt="Ground-truth neckline structural field">
+                <figcaption>Ground truth</figcaption>
+              </figure>
+              <figure>
+                <img src="assets/structural_fields/dress_pred_neckline.png" alt="Predicted neckline structural field">
+                <figcaption>Prediction</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="field-card">
+            <h3>Waistline</h3>
+            <div class="field-pair">
+              <figure>
+                <img src="assets/structural_fields/dress_gt_waistline.png" alt="Ground-truth waistline structural field">
+                <figcaption>Ground truth</figcaption>
+              </figure>
+              <figure>
+                <img src="assets/structural_fields/dress_pred_waistline.png" alt="Predicted waistline structural field">
+                <figcaption>Prediction</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="field-card">
+            <h3>Hemline</h3>
+            <div class="field-pair">
+              <figure>
+                <img src="assets/structural_fields/dress_gt_hemline.png" alt="Ground-truth hemline structural field">
+                <figcaption>Ground truth</figcaption>
+              </figure>
+              <figure>
+                <img src="assets/structural_fields/dress_pred_hemline.png" alt="Predicted hemline structural field">
+                <figcaption>Prediction</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="field-card">
+            <h3>Cuff</h3>
+            <div class="field-pair">
+              <figure>
+                <img src="assets/structural_fields/dress_gt_cuff_union.png" alt="Ground-truth cuff structural field">
+                <figcaption>Ground truth</figcaption>
+              </figure>
+              <figure>
+                <img src="assets/structural_fields/dress_pred_cuff_union.png" alt="Predicted cuff structural field">
+                <figcaption>Prediction</figcaption>
+              </figure>
+            </div>
+          </div>
         </div>
       </div>
     </section>
