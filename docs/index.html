@@ -81,28 +81,12 @@
       color:#fff;
       border-color:var(--ink);
     }
-    .showcase{
-      display:grid;
-      gap:14px;
-      margin-top:28px;
-      padding:12px;
-      border:1px solid var(--line);
-      border-radius:26px;
-      background:linear-gradient(180deg,#f8fafc 0%,#f3f5f9 100%);
-      box-shadow:0 20px 64px rgba(16,24,40,.12);
-    }
-    .cover-image{
-      display:block;
-      width:100%;
-      height:auto;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:#fff;
-    }
     .hero{
+      margin-top:28px;
       overflow:hidden;
-      border-radius:16px;
+      border-radius:20px;
       background:#0d1117;
+      box-shadow:0 20px 64px rgba(16,24,40,.12);
     }
     .hero-grid{
       display:grid;
@@ -289,8 +273,7 @@
     }
     @media (max-width:800px){
       header{padding-top:42px}
-      .showcase{gap:8px;padding:8px;border-radius:20px}
-      .hero,.cover-image{border-radius:12px}
+      .hero{border-radius:14px}
       .cards,.triptych,.metrics{grid-template-columns:1fr}
       .field-grid{grid-template-columns:repeat(2,1fr)}
       section{padding:52px 0}
@@ -316,41 +299,33 @@
       <a class="button" href="annotation_example.md">Annotation details</a>
     </div>
 
-    <div class="showcase">
-      <div class="hero" aria-label="Synchronized garment simulations">
-        <div class="hero-grid">
-          <div class="hero-cell">
-            <video class="hero-video" autoplay muted loop playsinline preload="auto">
-              <source src="assets/simulation/dress_rollout.mp4" type="video/mp4">
-            </video>
-            <span class="hero-label">Dresses</span>
-          </div>
-          <div class="hero-cell">
-            <video class="hero-video" autoplay muted loop playsinline preload="auto">
-              <source src="assets/simulation/pants_rollout.mp4" type="video/mp4">
-            </video>
-            <span class="hero-label">Pants</span>
-          </div>
-          <div class="hero-cell">
-            <video class="hero-video" data-rate="1.5" data-start="8" autoplay muted playsinline preload="auto">
-              <source src="assets/simulation/skirt_rollout.mp4" type="video/mp4">
-            </video>
-            <span class="hero-label">Skirts</span>
-          </div>
-          <div class="hero-cell">
-            <video class="hero-video" autoplay muted loop playsinline preload="auto">
-              <source src="assets/simulation/top_rollout.mp4" type="video/mp4">
-            </video>
-            <span class="hero-label">Tops</span>
-          </div>
+    <div class="hero" aria-label="Synchronized garment simulations">
+      <div class="hero-grid">
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto">
+            <source src="assets/simulation/dress_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Dresses</span>
+        </div>
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto">
+            <source src="assets/simulation/pants_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Pants</span>
+        </div>
+        <div class="hero-cell">
+          <video class="hero-video" data-rate="1.5" data-start="8" autoplay muted playsinline preload="auto">
+            <source src="assets/simulation/skirt_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Skirts</span>
+        </div>
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto">
+            <source src="assets/simulation/top_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Tops</span>
         </div>
       </div>
-
-      <img
-        class="cover-image"
-        src="assets/overall.jpg"
-        alt="Overview of joint garment-part prediction, garment-to-body alignment, and simulation-ready virtual try-on"
-      >
     </div>
   </header>
 
@@ -374,6 +349,21 @@
             <h3>Try-on alignment</h3>
             <p>Semantics restrict anatomical support, while structural fields refine within-region correspondence and reduce penetration.</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2 class="section-title">Method Overview</h2>
+        <p class="lead">
+          Our pipeline jointly predicts fine-grained garment-part semantics and topology-aware structural fields, then uses the predicted cues for garment-to-body alignment before dynamic try-on simulation.
+        </p>
+        <div class="figure">
+          <img
+            src="assets/overall.jpg"
+            alt="Overview of joint garment-part prediction, garment-to-body alignment, and simulation-ready virtual try-on"
+          >
         </div>
       </div>
     </section>
