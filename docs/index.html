@@ -184,6 +184,41 @@
       text-align:center;
       border-top:1px solid var(--line);
     }
+    .result-table-wrap{
+      margin-top:28px;
+      overflow-x:auto;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+    }
+    .result-table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:620px;
+    }
+    .result-table th,
+    .result-table td{
+      padding:14px 18px;
+      text-align:center;
+      border-bottom:1px solid var(--line);
+    }
+    .result-table th{
+      background:var(--panel);
+      font-size:13px;
+      color:#475467;
+      font-weight:700;
+    }
+    .result-table td:first-child,
+    .result-table th:first-child{
+      text-align:left;
+    }
+    .result-table tr:last-child td{
+      border-bottom:0;
+    }
+    .gain{
+      font-weight:700;
+      color:#067647;
+    }
     .field-grid{
       display:grid;
       grid-template-columns:repeat(4,1fr);
@@ -333,6 +368,43 @@
             <img src="assets/segmentation/dresses_ours_semantic.png" alt="Our garment part segmentation">
             <figcaption>Ours</figcaption>
           </figure>
+        </div>
+
+        <h3 style="margin:32px 0 8px;font-size:20px;">Selected Per-Class IoU Improvements</h3>
+        <p class="small" style="margin-top:0;">
+          Joint semantic–structural learning improves most functional-part classes. Representative gains over the semantic-only model are shown below.
+        </p>
+        <div class="result-table-wrap">
+          <table class="result-table" aria-label="Selected per-class IoU improvements">
+            <thead>
+              <tr>
+                <th>Part class</th>
+                <th>Semantic-only IoU</th>
+                <th>Ours IoU</th>
+                <th>Gain</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Waist</td>
+                <td>47.66%</td>
+                <td><strong>52.31%</strong></td>
+                <td class="gain">+4.65</td>
+              </tr>
+              <tr>
+                <td>Cuff</td>
+                <td>44.43%</td>
+                <td><strong>53.03%</strong></td>
+                <td class="gain">+8.60</td>
+              </tr>
+              <tr>
+                <td>Collar</td>
+                <td>66.51%</td>
+                <td><strong>69.88%</strong></td>
+                <td class="gain">+3.37</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
