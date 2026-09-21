@@ -370,42 +370,39 @@
           </figure>
         </div>
 
-        <h3 style="margin:32px 0 8px;font-size:20px;">Selected Per-Class IoU Improvements</h3>
+        <h3 style="margin:32px 0 8px;font-size:20px;">Per-Class Segmentation Results</h3>
         <p class="small" style="margin-top:0;">
-          Joint semantic–structural learning improves most functional-part classes. Representative gains over the semantic-only model are shown below.
+          Per-class IoU (%). Semantic-only denotes the semantic-only PT-v3m3 baseline, while Ours adds topology-aware structural supervision with boundary weighting.
         </p>
         <div class="result-table-wrap">
-          <table class="result-table" aria-label="Selected per-class IoU improvements">
+          <table class="result-table" aria-label="Per-class garment part IoU">
             <thead>
               <tr>
-                <th>Part class</th>
-                <th>Semantic-only IoU</th>
-                <th>Ours IoU</th>
-                <th>Gain</th>
+                <th>Part</th>
+                <th>PT-v3m1</th>
+                <th>Semantic-only</th>
+                <th>Ours</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Waist</td>
-                <td>47.66%</td>
-                <td><strong>52.31%</strong></td>
-                <td class="gain">+4.65</td>
-              </tr>
-              <tr>
-                <td>Cuff</td>
-                <td>44.43%</td>
-                <td><strong>53.03%</strong></td>
-                <td class="gain">+8.60</td>
-              </tr>
-              <tr>
-                <td>Collar</td>
-                <td>66.51%</td>
-                <td><strong>69.88%</strong></td>
-                <td class="gain">+3.37</td>
-              </tr>
+              <tr><td>Body F.</td><td>79.54</td><td>84.13</td><td><strong>85.63</strong></td></tr>
+              <tr><td>Body B.</td><td>80.15</td><td>85.27</td><td><strong>86.69</strong></td></tr>
+              <tr><td>Lower F.</td><td>81.58</td><td>87.79</td><td><strong>88.92</strong></td></tr>
+              <tr><td>Lower B.</td><td>80.73</td><td>87.89</td><td><strong>88.99</strong></td></tr>
+              <tr><td>Sleeve</td><td>88.91</td><td>89.74</td><td><strong>90.76</strong></td></tr>
+              <tr><td>Collar</td><td>63.78</td><td>66.51</td><td><strong>69.88</strong></td></tr>
+              <tr><td>Waist</td><td>36.13</td><td>47.66</td><td><strong>52.31</strong></td></tr>
+              <tr><td>Cuff</td><td>35.56</td><td>44.43</td><td><strong>53.03</strong></td></tr>
+              <tr><td>Hem</td><td>48.55</td><td>48.28</td><td><strong>50.00</strong></td></tr>
+              <tr><td>Pocket</td><td>1.87</td><td>16.66</td><td><strong>19.59</strong></td></tr>
+              <tr><td>Ruffles</td><td>66.36</td><td><strong>88.87</strong></td><td>88.80</td></tr>
+              <tr><td>Hat</td><td>91.53</td><td>91.83</td><td><strong>93.46</strong></td></tr>
             </tbody>
           </table>
         </div>
+        <p class="small" style="margin-top:14px;">
+          Since overall metrics can be dominated by large garment regions, we also report all 12 semantic classes separately. Compared with the semantic-only PT-v3m3 variant, our joint representation improves 11 of the 12 classes, with particularly clear gains on localized and structure-sensitive parts: waist improves from 47.66% to 52.31%, cuff from 44.43% to 53.03%, and collar from 66.51% to 69.88%. These results suggest that continuous topology-aware structural cues complement discrete semantic labels particularly around localized garment structures and semantic interfaces.
+        </p>
       </div>
     </section>
 
