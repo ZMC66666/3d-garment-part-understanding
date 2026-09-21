@@ -225,6 +225,7 @@
       border:1px solid var(--line);
       border-radius:16px;
       background:#fff;
+      box-shadow:0 6px 18px rgba(16,24,40,.04);
     }
     .viewer-card h3{
       margin:0;
@@ -239,7 +240,7 @@
       width:100%;
       height:460px;
       overflow:hidden;
-      background:linear-gradient(180deg,#fbfcfe 0%,#f4f6f9 100%);
+      background:radial-gradient(circle at 50% 38%,#ffffff 0%,#f7f8fb 62%,#eef1f5 100%);
       cursor:grab;
     }
     .mesh-viewer:active{cursor:grabbing}
@@ -446,7 +447,7 @@
       <div class="wrap">
         <h2 class="section-title">Fine-Grained Garment Part Segmentation</h2>
         <p class="lead">
-          The task reasons about <em>parts within an individual garment</em>, rather than predicting only the garment category or original sewing-panel identity.
+          The task reasons about <em>parts within an individual garment</em>, rather than predicting only the garment category or original sewing-panel identity. Interactive PLY meshes below compare ground truth and prediction directly in 3D.
         </p>
         <div class="viewer-panel">
           <div class="viewer-toolbar">
@@ -518,7 +519,7 @@
       <div class="wrap">
         <h2 class="section-title">Topology-Aware Structural Fields</h2>
         <p class="lead">
-          Discrete labels answer <strong>what part?</strong>; structural fields answer <strong>where within the garment structure?</strong> Distances follow mesh connectivity, remaining meaningful when folds bring unrelated surface regions close in Euclidean space.
+          Discrete labels answer <strong>what part?</strong>; structural fields answer <strong>where within the garment structure?</strong> Select a garment and structural field to compare ground truth and prediction directly on the 3D surface.
         </p>
         <div class="viewer-panel">
           <div class="viewer-toolbar">
@@ -561,7 +562,6 @@
             Dress has all four valid channels; Top has an invalid waistline channel; Skirt and Pants have invalid neckline and cuff channels.
             PLY vertex colors are shown directly without remapping.
           </p>
-        </div>
         </div>
       </div>
     </section>
@@ -734,11 +734,9 @@
             }
 
             const hasVertexColor = Boolean(geometry.getAttribute('color'));
-            const material = new THREE.MeshStandardMaterial({
+            const material = new THREE.MeshBasicMaterial({
               vertexColors: hasVertexColor,
               color: hasVertexColor ? 0xffffff : 0xd0d5dd,
-              roughness: 0.82,
-              metalness: 0.0,
               side: THREE.DoubleSide
             });
 
