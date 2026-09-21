@@ -315,6 +315,41 @@
       font-weight:700;
       color:#067647;
     }
+    .alignment-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+      margin-top:26px;
+    }
+    .alignment-card{
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      box-shadow:0 6px 18px rgba(16,24,40,.04);
+    }
+    .alignment-card h3{
+      margin:0;
+      padding:11px 15px;
+      border-bottom:1px solid var(--line);
+      background:var(--panel);
+      font-size:16px;
+      text-align:center;
+    }
+    .alignment-viewer{
+      position:relative;
+      width:100%;
+      height:420px;
+      overflow:hidden;
+      background:radial-gradient(circle at 50% 38%,#ffffff 0%,#f7f8fb 62%,#eef1f5 100%);
+      cursor:grab;
+    }
+    .alignment-viewer:active{cursor:grabbing}
+    .alignment-viewer canvas{
+      display:block;
+      width:100%;
+      height:100%;
+    }
     .metrics{
       display:grid;
       grid-template-columns:repeat(4,1fr);
@@ -348,8 +383,9 @@
       header{padding-top:42px}
       .hero{border-radius:14px}
       .cards,.metrics{grid-template-columns:1fr}
-      .viewer-split{grid-template-columns:1fr}
+      .viewer-split,.alignment-grid{grid-template-columns:1fr}
       .mesh-viewer{height:390px}
+      .alignment-viewer{height:390px}
       .viewer-hint{width:100%;margin-left:0}
       section{padding:52px 0}
     }
@@ -572,10 +608,27 @@
         <p class="lead">
           Predicted part semantics constrain anatomically valid correspondences, and predicted structural fields refine within-region placement.
         </p>
-        <div class="figure">
-          <img src="assets/alignment/alignment_ablation_signed_gap.png" alt="Garment-to-body alignment ablation with signed gap visualization">
-          <div class="caption">Signed-gap visualization for progressively stronger garment cues. Negative values indicate body penetration.</div>
+        <div class="alignment-grid">
+          <div class="alignment-card">
+            <h3>Dress</h3>
+            <div id="alignmentDress" class="alignment-viewer" aria-label="Aligned dress on body 3D viewer"></div>
+          </div>
+          <div class="alignment-card">
+            <h3>Top</h3>
+            <div id="alignmentTop" class="alignment-viewer" aria-label="Aligned top on body 3D viewer"></div>
+          </div>
+          <div class="alignment-card">
+            <h3>Skirt</h3>
+            <div id="alignmentSkirt" class="alignment-viewer" aria-label="Aligned skirt on body 3D viewer"></div>
+          </div>
+          <div class="alignment-card">
+            <h3>Pants</h3>
+            <div id="alignmentPants" class="alignment-viewer" aria-label="Aligned pants on body 3D viewer"></div>
+          </div>
         </div>
+        <p class="viewer-note">
+          Interactive T-pose garment-to-body alignment examples for four garment categories. Drag to rotate, scroll to zoom, and right-drag to pan.
+        </p>
         <div class="metrics">
           <div class="metric"><strong>0.1261</strong><span>Structural mismatch ↓</span></div>
           <div class="metric"><strong>14.646 mm</strong><span>Gap ↓</span></div>
@@ -811,6 +864,13 @@
       pants: 'assets/structural_fields/pants/3997439ee4c9381a81e4b39f210e1f66/'
     };
 
+    const alignmentPaths = {
+      dress: 'assets/alignment/dresses/7ede5ae39a1a90c605de25aaabc83f5b/tpose_on_body.ply',
+      top: 'assets/alignment/tops/30628164375b24f1b56cee846177eede/tpose_on_body.ply',
+      skirt: 'assets/alignment/skirts/9e28239697d5d2a9f5261f15f0121f35/tpose_on_body.ply',
+      pants: 'assets/alignment/pants/3997439ee4c9381a81e4b39f210e1f66/tpose_on_body.ply'
+    };
+
     const semGT = new MeshViewer('semViewerGT');
     const semPred = new MeshViewer('semViewerPred');
     semGT.setPeer(semPred);
@@ -820,6 +880,11 @@
     const fieldPred = new MeshViewer('fieldViewerPred');
     fieldGT.setPeer(fieldPred);
     fieldPred.setPeer(fieldGT);
+
+    const alignmentDress = new MeshViewer('alignmentDress');
+    const alignmentTop = new MeshViewer('alignmentTop');
+    const alignmentSkirt = new MeshViewer('alignmentSkirt');
+    const alignmentPants = new MeshViewer('alignmentPants');
 
     const semGarmentSelect = document.getElementById('semGarmentSelect');
     const fieldGarmentSelect = document.getElementById('fieldGarmentSelect');
@@ -844,6 +909,10 @@
 
     updateSemanticViewers();
     updateFieldViewers();
+    alignmentDress.load(alignmentPaths.dress);
+    alignmentTop.load(alignmentPaths.top);
+    alignmentSkirt.load(alignmentPaths.skirt);
+    alignmentPants.load(alignmentPaths.pants);
   </script>
 
 </body>
