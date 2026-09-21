@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Project page for Fine-Grained 3D Garment Part Segmentation with Topology-Aware Structural Fields for Virtual Try-On.">
   <title>3D Garment Part Understanding</title>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
   <style>
     :root{
       --bg:#ffffff;
@@ -166,26 +175,109 @@
       font-size:14px;
       border-top:1px solid var(--line);
     }
-    .triptych{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin-top:24px;
-    }
-    .triptych figure{
-      margin:0;
+    .viewer-panel{
+      margin-top:26px;
+      padding:18px;
       border:1px solid var(--line);
-      border-radius:14px;
+      border-radius:18px;
+      background:#fff;
+      box-shadow:0 10px 34px rgba(16,24,40,.05);
+    }
+    .viewer-toolbar{
+      display:flex;
+      align-items:flex-end;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-bottom:16px;
+    }
+    .viewer-toolbar label{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      color:#475467;
+      font-size:13px;
+      font-weight:700;
+    }
+    .viewer-toolbar select{
+      min-width:160px;
+      height:40px;
+      padding:0 34px 0 12px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      color:var(--ink);
+      font:inherit;
+      font-weight:500;
+      cursor:pointer;
+    }
+    .viewer-hint{
+      margin-left:auto;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .viewer-split{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+    .viewer-card{
       overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:16px;
       background:#fff;
     }
-    .triptych img{display:block;width:100%}
-    .triptych figcaption{
-      padding:10px 12px;
-      font-size:13px;
-      color:var(--muted);
+    .viewer-card h3{
+      margin:0;
+      padding:11px 15px;
+      border-bottom:1px solid var(--line);
+      background:var(--panel);
+      font-size:16px;
       text-align:center;
-      border-top:1px solid var(--line);
+    }
+    .mesh-viewer{
+      position:relative;
+      width:100%;
+      height:460px;
+      overflow:hidden;
+      background:linear-gradient(180deg,#fbfcfe 0%,#f4f6f9 100%);
+      cursor:grab;
+    }
+    .mesh-viewer:active{cursor:grabbing}
+    .mesh-viewer canvas{
+      display:block;
+      width:100%;
+      height:100%;
+    }
+    .mesh-status{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:13px;
+      pointer-events:none;
+    }
+    .viewer-note{
+      margin:14px 2px 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .invalid-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-right:5px;
+      font-weight:650;
+      color:#475467;
+    }
+    .invalid-chip::before{
+      content:"";
+      width:10px;
+      height:10px;
+      border-radius:3px;
+      background:#ff00ff;
+      border:1px solid rgba(17,24,39,.14);
     }
     .result-table-wrap{
       margin-top:28px;
@@ -222,48 +314,6 @@
       font-weight:700;
       color:#067647;
     }
-    .field-compare-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:16px;
-      margin-top:26px;
-    }
-    .field-card{
-      border:1px solid var(--line);
-      border-radius:16px;
-      overflow:hidden;
-      background:#fff;
-    }
-    .field-card h3{
-      margin:0;
-      padding:13px 16px;
-      font-size:17px;
-      text-align:center;
-      background:var(--panel);
-      border-bottom:1px solid var(--line);
-    }
-    .field-pair{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:1px;
-      background:var(--line);
-    }
-    .field-pair figure{
-      margin:0;
-      background:#fff;
-    }
-    .field-pair img{
-      display:block;
-      width:100%;
-      height:auto;
-    }
-    .field-pair figcaption{
-      padding:9px 10px;
-      text-align:center;
-      font-size:13px;
-      color:var(--muted);
-      border-top:1px solid var(--line);
-    }
     .metrics{
       display:grid;
       grid-template-columns:repeat(4,1fr);
@@ -296,8 +346,10 @@
     @media (max-width:800px){
       header{padding-top:42px}
       .hero{border-radius:14px}
-      .cards,.triptych,.metrics{grid-template-columns:1fr}
-      .field-compare-grid{grid-template-columns:1fr}
+      .cards,.metrics{grid-template-columns:1fr}
+      .viewer-split{grid-template-columns:1fr}
+      .mesh-viewer{height:390px}
+      .viewer-hint{width:100%;margin-left:0}
       section{padding:52px 0}
     }
   </style>
@@ -396,19 +448,34 @@
         <p class="lead">
           The task reasons about <em>parts within an individual garment</em>, rather than predicting only the garment category or original sewing-panel identity.
         </p>
-        <div class="triptych">
-          <figure>
-            <img src="assets/segmentation/dresses_gt_semantic.png" alt="Ground-truth garment part segmentation">
-            <figcaption>Ground truth</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/segmentation/dresses_ptv3m1_semantic.png" alt="Point Transformer V3 baseline segmentation">
-            <figcaption>PT-v3m1 baseline</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/segmentation/dresses_ours_semantic.png" alt="Our garment part segmentation">
-            <figcaption>Ours</figcaption>
-          </figure>
+        <div class="viewer-panel">
+          <div class="viewer-toolbar">
+            <label>
+              Garment
+              <select id="semGarmentSelect" aria-label="Semantic garment category">
+                <option value="dresses">Dress</option>
+                <option value="tops">Top</option>
+                <option value="skirts">Skirt</option>
+                <option value="pants">Pants</option>
+              </select>
+            </label>
+            <div class="viewer-hint">Drag to rotate · Scroll to zoom · Right-drag to pan</div>
+          </div>
+
+          <div class="viewer-split">
+            <div class="viewer-card">
+              <h3>Ground Truth</h3>
+              <div id="semViewerGT" class="mesh-viewer" aria-label="Semantic ground-truth 3D viewer"></div>
+            </div>
+            <div class="viewer-card">
+              <h3>Prediction</h3>
+              <div id="semViewerPred" class="mesh-viewer" aria-label="Semantic prediction 3D viewer"></div>
+            </div>
+          </div>
+
+          <p class="viewer-note">
+            Vertex colors are read directly from the PLY files. The two views are synchronized for side-by-side comparison.
+          </p>
         </div>
 
         <h3 style="margin:32px 0 8px;font-size:20px;">Per-Class Segmentation Results</h3>
@@ -453,62 +520,48 @@
         <p class="lead">
           Discrete labels answer <strong>what part?</strong>; structural fields answer <strong>where within the garment structure?</strong> Distances follow mesh connectivity, remaining meaningful when folds bring unrelated surface regions close in Euclidean space.
         </p>
-        <div class="field-compare-grid">
-          <div class="field-card">
-            <h3>Neckline</h3>
-            <div class="field-pair">
-              <figure>
-                <img src="assets/structural_fields/dress_gt_neckline.png" alt="Ground-truth neckline structural field">
-                <figcaption>Ground truth</figcaption>
-              </figure>
-              <figure>
-                <img src="assets/structural_fields/dress_pred_neckline.png" alt="Predicted neckline structural field">
-                <figcaption>Prediction</figcaption>
-              </figure>
+        <div class="viewer-panel">
+          <div class="viewer-toolbar">
+            <label>
+              Garment
+              <select id="fieldGarmentSelect" aria-label="Structural-field garment category">
+                <option value="dresses">Dress</option>
+                <option value="tops">Top</option>
+                <option value="skirts">Skirt</option>
+                <option value="pants">Pants</option>
+              </select>
+            </label>
+
+            <label>
+              Structural field
+              <select id="fieldTypeSelect" aria-label="Structural field type">
+                <option value="neckline">Neckline</option>
+                <option value="waistline">Waistline</option>
+                <option value="hemline">Hemline</option>
+                <option value="cuff_union">Cuff</option>
+              </select>
+            </label>
+
+            <div class="viewer-hint">Drag to rotate · Scroll to zoom · Right-drag to pan</div>
+          </div>
+
+          <div class="viewer-split">
+            <div class="viewer-card">
+              <h3>Ground Truth</h3>
+              <div id="fieldViewerGT" class="mesh-viewer" aria-label="Structural-field ground-truth 3D viewer"></div>
+            </div>
+            <div class="viewer-card">
+              <h3>Prediction</h3>
+              <div id="fieldViewerPred" class="mesh-viewer" aria-label="Structural-field prediction 3D viewer"></div>
             </div>
           </div>
 
-          <div class="field-card">
-            <h3>Waistline</h3>
-            <div class="field-pair">
-              <figure>
-                <img src="assets/structural_fields/dress_gt_waistline.png" alt="Ground-truth waistline structural field">
-                <figcaption>Ground truth</figcaption>
-              </figure>
-              <figure>
-                <img src="assets/structural_fields/dress_pred_waistline.png" alt="Predicted waistline structural field">
-                <figcaption>Prediction</figcaption>
-              </figure>
-            </div>
-          </div>
-
-          <div class="field-card">
-            <h3>Hemline</h3>
-            <div class="field-pair">
-              <figure>
-                <img src="assets/structural_fields/dress_gt_hemline.png" alt="Ground-truth hemline structural field">
-                <figcaption>Ground truth</figcaption>
-              </figure>
-              <figure>
-                <img src="assets/structural_fields/dress_pred_hemline.png" alt="Predicted hemline structural field">
-                <figcaption>Prediction</figcaption>
-              </figure>
-            </div>
-          </div>
-
-          <div class="field-card">
-            <h3>Cuff</h3>
-            <div class="field-pair">
-              <figure>
-                <img src="assets/structural_fields/dress_gt_cuff_union.png" alt="Ground-truth cuff structural field">
-                <figcaption>Ground truth</figcaption>
-              </figure>
-              <figure>
-                <img src="assets/structural_fields/dress_pred_cuff_union.png" alt="Predicted cuff structural field">
-                <figcaption>Prediction</figcaption>
-              </figure>
-            </div>
-          </div>
+          <p class="viewer-note">
+            <span class="invalid-chip">Magenta</span> denotes an invalid structural channel.
+            Dress has all four valid channels; Top has an invalid waistline channel; Skirt and Pants have invalid neckline and cuff channels.
+            PLY vertex colors are shown directly without remapping.
+          </p>
+        </div>
         </div>
       </div>
     </section>
@@ -595,5 +648,205 @@
     // Videos start together, then each plays its complete rollout independently.
     // This avoids truncating longer clips when different categories have different durations.
   </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+
+    class MeshViewer {
+      constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0xf7f8fb);
+
+        this.camera = new THREE.PerspectiveCamera(40, 1, 0.001, 1000);
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        this.container.appendChild(this.renderer.domElement);
+
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.08;
+        this.controls.screenSpacePanning = true;
+
+        this.loader = new PLYLoader();
+        this.mesh = null;
+        this.peer = null;
+        this.isSyncing = false;
+        this.loadToken = 0;
+
+        this.status = document.createElement('div');
+        this.status.className = 'mesh-status';
+        this.status.textContent = 'Loading 3D mesh…';
+        this.container.appendChild(this.status);
+
+        this.controls.addEventListener('change', () => this.syncPeer());
+        this.resizeObserver = new ResizeObserver(() => this.resize());
+        this.resizeObserver.observe(this.container);
+
+        this.resize();
+        this.animate();
+      }
+
+      setPeer(peer) {
+        this.peer = peer;
+      }
+
+      syncPeer() {
+        if (!this.peer || this.isSyncing) return;
+        this.peer.isSyncing = true;
+        this.peer.camera.position.copy(this.camera.position);
+        this.peer.camera.quaternion.copy(this.camera.quaternion);
+        this.peer.camera.up.copy(this.camera.up);
+        this.peer.camera.zoom = this.camera.zoom;
+        this.peer.camera.updateProjectionMatrix();
+        this.peer.controls.target.copy(this.controls.target);
+        this.peer.isSyncing = false;
+      }
+
+      clearMesh() {
+        if (!this.mesh) return;
+        this.scene.remove(this.mesh);
+        this.mesh.geometry.dispose();
+        this.mesh.material.dispose();
+        this.mesh = null;
+      }
+
+      load(path, fit = true) {
+        const token = ++this.loadToken;
+        this.status.style.display = 'flex';
+        this.status.textContent = 'Loading 3D mesh…';
+
+        this.loader.load(
+          path,
+          (geometry) => {
+            if (token !== this.loadToken) {
+              geometry.dispose();
+              return;
+            }
+
+            this.clearMesh();
+
+            if (!geometry.getAttribute('normal')) {
+              geometry.computeVertexNormals();
+            }
+
+            const hasVertexColor = Boolean(geometry.getAttribute('color'));
+            const material = new THREE.MeshStandardMaterial({
+              vertexColors: hasVertexColor,
+              color: hasVertexColor ? 0xffffff : 0xd0d5dd,
+              roughness: 0.82,
+              metalness: 0.0,
+              side: THREE.DoubleSide
+            });
+
+            geometry.computeBoundingBox();
+            const center = new THREE.Vector3();
+            geometry.boundingBox.getCenter(center);
+            geometry.translate(-center.x, -center.y, -center.z);
+
+            this.mesh = new THREE.Mesh(geometry, material);
+            this.scene.add(this.mesh);
+
+            if (fit) this.fitCamera();
+            this.status.style.display = 'none';
+          },
+          undefined,
+          () => {
+            if (token !== this.loadToken) return;
+            this.status.style.display = 'flex';
+            this.status.textContent = 'Could not load this PLY file.';
+          }
+        );
+      }
+
+      fitCamera() {
+        if (!this.mesh) return;
+
+        const box = new THREE.Box3().setFromObject(this.mesh);
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+
+        const fov = THREE.MathUtils.degToRad(this.camera.fov);
+        const distance = Math.max((maxDim * 0.5) / Math.tan(fov * 0.5) * 1.45, 0.1);
+
+        this.camera.position.set(0, 0, distance);
+        this.camera.near = Math.max(distance / 100, 0.001);
+        this.camera.far = Math.max(distance * 100, 10);
+        this.camera.updateProjectionMatrix();
+
+        this.controls.target.set(0, 0, 0);
+        this.controls.minDistance = distance * 0.18;
+        this.controls.maxDistance = distance * 8;
+        this.controls.update();
+        this.syncPeer();
+      }
+
+      resize() {
+        const width = Math.max(this.container.clientWidth, 1);
+        const height = Math.max(this.container.clientHeight, 1);
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(width, height, false);
+      }
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+        this.controls.update();
+        this.renderer.render(this.scene, this.camera);
+      }
+    }
+
+    const semanticRoots = {
+      dresses: 'assets/segmentation/dresses/4140df311cf31024c3beb40f8af7c480/',
+      tops: 'assets/segmentation/tops/627ec5c873ae9aeee6206585bdb5e015/',
+      skirts: 'assets/segmentation/skirts/d398ea6c465a72f9f5b666fb331ae7e5/',
+      pants: 'assets/segmentation/pants/3997439ee4c9381a81e4b39f210e1f66/'
+    };
+
+    const structuralRoots = {
+      dresses: 'assets/structural_fields/dresses/4140df311cf31024c3beb40f8af7c480/',
+      tops: 'assets/structural_fields/tops/627ec5c873ae9aeee6206585bdb5e015/',
+      skirts: 'assets/structural_fields/skirts/d398ea6c465a72f9f5b666fb331ae7e5/',
+      pants: 'assets/structural_fields/pants/3997439ee4c9381a81e4b39f210e1f66/'
+    };
+
+    const semGT = new MeshViewer('semViewerGT');
+    const semPred = new MeshViewer('semViewerPred');
+    semGT.setPeer(semPred);
+    semPred.setPeer(semGT);
+
+    const fieldGT = new MeshViewer('fieldViewerGT');
+    const fieldPred = new MeshViewer('fieldViewerPred');
+    fieldGT.setPeer(fieldPred);
+    fieldPred.setPeer(fieldGT);
+
+    const semGarmentSelect = document.getElementById('semGarmentSelect');
+    const fieldGarmentSelect = document.getElementById('fieldGarmentSelect');
+    const fieldTypeSelect = document.getElementById('fieldTypeSelect');
+
+    function updateSemanticViewers() {
+      const root = semanticRoots[semGarmentSelect.value];
+      semGT.load(root + 'semantic_gt.ply');
+      semPred.load(root + 'semantic_pred.ply');
+    }
+
+    function updateFieldViewers() {
+      const root = structuralRoots[fieldGarmentSelect.value];
+      const field = fieldTypeSelect.value;
+      fieldGT.load(root + 'struct_' + field + '_gt.ply');
+      fieldPred.load(root + 'struct_' + field + '_pred.ply');
+    }
+
+    semGarmentSelect.addEventListener('change', updateSemanticViewers);
+    fieldGarmentSelect.addEventListener('change', updateFieldViewers);
+    fieldTypeSelect.addEventListener('change', updateFieldViewers);
+
+    updateSemanticViewers();
+    updateFieldViewers();
+  </script>
+
 </body>
 </html>
