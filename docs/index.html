@@ -804,7 +804,7 @@
             }
 
             const hasVertexColor = Boolean(geometry.getAttribute('color'));
-            const material = new THREE.MeshStandardMaterial({
+            const material = new THREE.MeshPhongMaterial({
               vertexColors: hasVertexColor,
               color: hasVertexColor ? 0xffffff : 0xd0d5dd,
               roughness: 0.72,
