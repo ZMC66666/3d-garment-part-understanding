@@ -596,7 +596,7 @@
           <p class="viewer-note">
             <span class="invalid-chip">Magenta</span> denotes an invalid structural channel.
             Dress has all four valid channels; Top has an invalid waistline channel; Skirt and Pants have invalid neckline and cuff channels.
-            PLY vertex colors are shown directly without remapping.
+            PLY vertex colors are preserved, with soft lighting added only to reveal surface shape.
           </p>
         </div>
       </div>
@@ -713,6 +713,23 @@
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0xf7f8fb);
 
+        // Soft studio-style lighting: enough shading to reveal folds and geometry
+        // without overpowering the PLY vertex colors.
+        const hemi = new THREE.HemisphereLight(0xffffff, 0x667085, 1.35);
+        this.scene.add(hemi);
+
+        const keyLight = new THREE.DirectionalLight(0xffffff, 2.15);
+        keyLight.position.set(3.5, 4.5, 5.5);
+        this.scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight(0xcfe0ff, 0.75);
+        fillLight.position.set(-4.0, 1.5, 2.5);
+        this.scene.add(fillLight);
+
+        const rimLight = new THREE.DirectionalLight(0xffffff, 0.55);
+        rimLight.position.set(0.0, 3.0, -4.0);
+        this.scene.add(rimLight);
+
         this.camera = new THREE.PerspectiveCamera(40, 1, 0.001, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -787,9 +804,11 @@
             }
 
             const hasVertexColor = Boolean(geometry.getAttribute('color'));
-            const material = new THREE.MeshBasicMaterial({
+            const material = new THREE.MeshStandardMaterial({
               vertexColors: hasVertexColor,
               color: hasVertexColor ? 0xffffff : 0xd0d5dd,
+              roughness: 0.72,
+              metalness: 0.0,
               side: THREE.DoubleSide
             });
 
