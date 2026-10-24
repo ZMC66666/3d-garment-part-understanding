@@ -1,0 +1,1226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Project page for Fine-Grained 3D Garment Part Segmentation with Topology-Aware Structural Fields for Virtual Try-On.">
+  <title>3D Garment Part Understanding</title>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --ink:#111827;
+      --muted:#667085;
+      --line:#e7eaf0;
+      --panel:#f7f8fb;
+      --accent:#315efb;
+      --max:1120px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.65;
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{width:min(var(--max),calc(100% - 40px));margin:0 auto}
+    header{
+      padding:64px 0 28px;
+      text-align:center;
+    }
+    .eyebrow{
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--accent);
+      margin-bottom:14px;
+    }
+    h1{
+      font-size:clamp(34px,5vw,62px);
+      line-height:1.08;
+      letter-spacing:-.035em;
+      max-width:1000px;
+      margin:0 auto 20px;
+    }
+    .authors{
+      font-size:17px;
+      color:#344054;
+      margin:8px auto 5px;
+    }
+    .affiliations{
+      max-width:920px;
+      margin:0 auto;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:24px;
+    }
+    .button{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:42px;
+      padding:0 18px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      font-weight:650;
+      background:#fff;
+      color:var(--ink);
+    }
+    .button.primary{
+      background:var(--ink);
+      color:#fff;
+      border-color:var(--ink);
+    }
+    .hero{
+      margin-top:28px;
+      overflow:hidden;
+      border-radius:20px;
+      background:#0d1117;
+      box-shadow:0 20px 64px rgba(16,24,40,.12);
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:2px;
+      background:#0d1117;
+    }
+    .hero-cell{
+      position:relative;
+      overflow:hidden;
+      background:#0d1117;
+      aspect-ratio:16 / 10;
+    }
+    .hero-cell video{
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#0d1117;
+      opacity:0;
+      transition:opacity .18s ease;
+    }
+    .hero-cell video.is-ready{opacity:1}
+    .hero-label{
+      position:absolute;
+      left:12px;
+      bottom:10px;
+      padding:5px 9px;
+      border-radius:999px;
+      background:rgba(13,17,23,.70);
+      color:#fff;
+      font-size:12px;
+      font-weight:650;
+      letter-spacing:.01em;
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+      pointer-events:none;
+    }
+    section{padding:72px 0;border-top:1px solid var(--line)}
+    section:first-of-type{border-top:0}
+    .section-title{
+      font-size:30px;
+      line-height:1.2;
+      letter-spacing:-.02em;
+      margin:0 0 18px;
+    }
+    .lead{
+      max-width:860px;
+      color:#475467;
+      font-size:18px;
+    }
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+      margin-top:28px;
+    }
+    .card{
+      border:1px solid var(--line);
+      background:var(--panel);
+      border-radius:16px;
+      padding:22px;
+    }
+    .card h3{margin:0 0 8px;font-size:18px}
+    .card p{margin:0;color:#667085}
+    .evidence-section{background:linear-gradient(180deg,#f7f9ff 0%,#fff 100%)}
+    .evidence-kicker{margin:0 0 10px;color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.1em;text-transform:uppercase}
+    .evidence-card{display:flex;flex-direction:column;background:#fff;transition:transform .18s ease,box-shadow .18s ease}
+    .evidence-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(16,24,40,.07)}
+    .evidence-card:focus-within{outline:2px solid var(--accent);outline-offset:4px}
+    .evidence-card h3{line-height:1.35}
+    .evidence-card p{flex:1}
+    .evidence-card .evidence-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;font-weight:700}
+    .evidence-tag{display:inline-block;align-self:flex-start;margin-bottom:14px;padding:4px 9px;border:1px solid #e0e7ff;border-radius:6px;color:#315efb;background:#f3f6ff;font-size:12px;font-weight:650}
+    .protocol-strip{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:24px;padding:15px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#475467;font-size:14px}
+    .protocol-strip strong{color:var(--ink)}
+    .evidence-note{margin-top:16px;max-width:900px}
+    .evidence-section .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media(max-width:800px){.evidence-section .cards{grid-template-columns:1fr}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.evidence-card{transition:none}.evidence-card:hover{transform:none}}
+    .annotation-section{background:linear-gradient(180deg,#f8fafc 0%,#fff 100%)}
+    .annotation-header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+    .annotation-header .lead{margin-bottom:0}
+    .annotation-toolbar{display:flex;align-items:flex-end;gap:12px}
+    .annotation-toolbar label{display:flex;flex-direction:column;gap:6px;color:#475467;font-size:13px;font-weight:700}
+    .annotation-toolbar select{min-width:150px;height:40px;padding:0 34px 0 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:inherit;cursor:pointer}
+    .annotation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:26px}
+    .annotation-step{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(16,24,40,.05)}
+    .annotation-step-head{min-height:108px;padding:17px 18px 14px;border-bottom:1px solid var(--line)}
+    .annotation-step-index{display:inline-flex;margin-bottom:8px;color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+    .annotation-step h3{margin:0 0 5px;font-size:17px}
+    .annotation-step p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+    .annotation-step .mesh-viewer{height:340px;border-radius:0}
+    .anchor-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:15px 2px 0;color:#475467;font-size:13px}
+    .anchor-key{display:inline-flex;align-items:center;gap:6px}
+    .anchor-dot{width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 1px rgba(17,24,39,.12)}
+    .annotation-note{margin:14px 0 0;color:var(--muted);font-size:13px}
+    .annotation-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .dataset-section{background:#fff}
+    .dataset-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:28px}
+    .dataset-step{position:relative;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(16,24,40,.055)}
+    .dataset-step:not(:last-child)::after{content:'\2192';position:absolute;z-index:3;top:50%;right:-16px;display:grid;width:30px;height:30px;place-items:center;border:1px solid #dbe2f0;border-radius:50%;background:#fff;color:var(--accent);font-size:18px;font-weight:800;box-shadow:0 5px 14px rgba(16,24,40,.08)}
+    .dataset-step-head{min-height:126px;padding:18px 19px 15px;border-bottom:1px solid var(--line)}
+    .dataset-step-index{display:inline-flex;margin-bottom:8px;color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+    .dataset-step h3{margin:0 0 6px;font-size:18px}
+    .dataset-step p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+    .dataset-media{height:340px;overflow:hidden;border-radius:0 0 18px 18px;background:linear-gradient(145deg,#f8fafc,#eef2f7)}
+    .dataset-media img{display:block;width:100%;height:100%;padding:10px;object-fit:contain}
+    .dataset-step .mesh-viewer{height:340px;border-radius:0}
+    .dataset-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
+    .dataset-stat{padding:14px 15px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}
+    .dataset-stat strong{display:block;color:var(--ink);font-size:20px;line-height:1.15}
+    .dataset-stat span{display:block;margin-top:4px;color:var(--muted);font-size:12px;line-height:1.35}
+    .dataset-boundary{margin-top:18px;padding:16px 18px;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;background:#f3f6ff;color:#475467;font-size:14px;line-height:1.65}
+    .dataset-boundary strong{color:var(--ink)}
+    .dataset-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+    .figure{
+      margin-top:28px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .figure img{display:block;width:100%;height:auto}
+    .caption{
+      padding:14px 16px;
+      color:var(--muted);
+      font-size:14px;
+      border-top:1px solid var(--line);
+    }
+    .viewer-panel{
+      margin-top:26px;
+      padding:18px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#fff;
+      box-shadow:0 10px 34px rgba(16,24,40,.05);
+    }
+    .viewer-toolbar{
+      display:flex;
+      align-items:flex-end;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-bottom:16px;
+    }
+    .viewer-toolbar label{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      color:#475467;
+      font-size:13px;
+      font-weight:700;
+    }
+    .viewer-toolbar select{
+      min-width:160px;
+      height:40px;
+      padding:0 34px 0 12px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      color:var(--ink);
+      font:inherit;
+      font-weight:500;
+      cursor:pointer;
+    }
+    .viewer-hint{
+      margin-left:auto;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .viewer-split{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+    .viewer-card{
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      box-shadow:0 6px 18px rgba(16,24,40,.04);
+    }
+    .viewer-card h3{
+      margin:0;
+      padding:11px 15px;
+      border-bottom:1px solid var(--line);
+      background:var(--panel);
+      font-size:16px;
+      text-align:center;
+    }
+    .mesh-viewer{
+      position:relative;
+      width:100%;
+      height:460px;
+      overflow:hidden;
+      background:radial-gradient(circle at 50% 38%,#ffffff 0%,#f7f8fb 62%,#eef1f5 100%);
+      cursor:grab;
+    }
+    .mesh-viewer:active{cursor:grabbing}
+    .mesh-viewer canvas{
+      display:block;
+      width:100%;
+      height:100%;
+    }
+    .mesh-status{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:13px;
+      pointer-events:none;
+    }
+    .viewer-note{
+      margin:14px 2px 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .invalid-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-right:5px;
+      font-weight:650;
+      color:#475467;
+    }
+    .invalid-chip::before{
+      content:"";
+      width:10px;
+      height:10px;
+      border-radius:3px;
+      background:#ff00ff;
+      border:1px solid rgba(17,24,39,.14);
+    }
+    .result-table-wrap{
+      margin-top:28px;
+      overflow-x:auto;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+    }
+    .result-table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:620px;
+    }
+    .result-table th,
+    .result-table td{
+      padding:14px 18px;
+      text-align:center;
+      border-bottom:1px solid var(--line);
+    }
+    .result-table th{
+      background:var(--panel);
+      font-size:13px;
+      color:#475467;
+      font-weight:700;
+    }
+    .result-table td:first-child,
+    .result-table th:first-child{
+      text-align:left;
+    }
+    .result-table tr:last-child td{
+      border-bottom:0;
+    }
+    .gain{
+      font-weight:700;
+      color:#067647;
+    }
+    .alignment-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+      margin-top:26px;
+    }
+    .alignment-card{
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      box-shadow:0 6px 18px rgba(16,24,40,.04);
+    }
+    .alignment-card h3{
+      margin:0;
+      padding:11px 15px;
+      border-bottom:1px solid var(--line);
+      background:var(--panel);
+      font-size:16px;
+      text-align:center;
+    }
+    .alignment-viewer{
+      position:relative;
+      width:100%;
+      height:420px;
+      overflow:hidden;
+      background:radial-gradient(circle at 50% 38%,#ffffff 0%,#f7f8fb 62%,#eef1f5 100%);
+      cursor:grab;
+    }
+    .alignment-viewer:active{cursor:grabbing}
+    .alignment-viewer canvas{
+      display:block;
+      width:100%;
+      height:100%;
+    }
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-top:28px;
+    }
+    .metric{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:18px;
+      text-align:center;
+    }
+    .metric strong{
+      display:block;
+      font-size:28px;
+      letter-spacing:-.02em;
+    }
+    .metric span{font-size:13px;color:var(--muted)}
+    .small{
+      color:var(--muted);
+      font-size:14px;
+    }
+    footer{
+      border-top:1px solid var(--line);
+      padding:34px 0 50px;
+      color:var(--muted);
+      font-size:14px;
+      text-align:center;
+    }
+    @media (max-width:800px){
+      header{padding-top:42px}
+      .hero{border-radius:14px}
+      .cards,.metrics{grid-template-columns:1fr}
+      .viewer-split,.alignment-grid,.annotation-grid,.dataset-flow{grid-template-columns:1fr}
+      .mesh-viewer{height:390px}
+      .annotation-step .mesh-viewer{height:390px}
+      .dataset-step .mesh-viewer,.dataset-media{height:390px}
+      .dataset-step:not(:last-child)::after{top:auto;right:calc(50% - 15px);bottom:-16px;transform:rotate(90deg)}
+      .dataset-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .alignment-viewer{height:390px}
+      .viewer-hint{width:100%;margin-left:0}
+      section{padding:52px 0}
+    }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <div class="eyebrow">ICASSP 2027 Submission</div>
+    <h1>Fine-Grained 3D Garment Part Segmentation with Topology-Aware Structural Fields for Virtual Try-On</h1>
+    <div class="authors">
+      Maochun Zhang<sup>1,2</sup>, Yuyang Cai<sup>3</sup>, Qilin Wu<sup>1,2</sup>, Hao Feng<sup>1,2</sup>, Yuming Liu<sup>1,2</sup>, Feng Zhang<sup>1,2,4</sup>
+    </div>
+    <div class="affiliations">
+      <sup>1</sup> Guilin University of Electronic Technology &nbsp;·&nbsp;
+      <sup>2</sup> Guangxi Academy of Artificial Intelligence &nbsp;·&nbsp;
+      <sup>3</sup> The Hong Kong University of Science and Technology (Guangzhou) &nbsp;·&nbsp;
+      <sup>4</sup> Guangxi Institute of Digital Technology
+    </div>
+    <div class="actions">
+      <a class="button primary" href="https://github.com/ZMC66666/3d-garment-part-understanding">GitHub</a>
+      <a class="button" href="#technical-details">Technical details</a>
+      <a class="button" href="evaluation_protocol.html">Evaluation protocol</a>
+      <a class="button" href="#dataset-construction">Dataset &amp; annotation</a>
+    </div>
+
+    <div class="hero" aria-label="Synchronized garment simulations">
+      <div class="hero-grid">
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto">
+            <source src="assets/simulation/dress_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Dresses</span>
+        </div>
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto">
+            <source src="assets/simulation/pants_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Pants</span>
+        </div>
+        <div class="hero-cell">
+          <video class="hero-video" data-rate="1.5" data-start="8" autoplay muted playsinline preload="auto">
+            <source src="assets/simulation/skirt_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Skirts</span>
+        </div>
+        <div class="hero-cell">
+          <video class="hero-video" autoplay muted loop playsinline preload="auto">
+            <source src="assets/simulation/top_rollout.mp4" type="video/mp4">
+          </video>
+          <span class="hero-label">Tops</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div class="wrap">
+        <h2 class="section-title">Overview</h2>
+        <p class="lead">
+          We study <strong>fine-grained 3D garment part understanding</strong> on assembled garment meshes. Unlike garment-category segmentation, our task assigns functional labels within each garment and augments discrete semantics with continuous topology-aware structural fields for anatomy-aware virtual try-on.
+        </p>
+        <div class="cards">
+          <div class="card">
+            <h3>Functional part semantics</h3>
+            <p>A unified 12-class vertex-level label space captures collar, waist, hem, cuff, sleeve, front/back regions, pockets, ruffles, and hats.</p>
+          </div>
+          <div class="card">
+            <h3>Topology-aware structure</h3>
+            <p>Four continuous fields encode mesh-geodesic position relative to neckline, waistline, hemline, and cuff anchors.</p>
+          </div>
+          <div class="card">
+            <h3>Try-on alignment</h3>
+            <p>Semantics restrict anatomical support, while structural fields refine within-region correspondence and reduce penetration.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dataset-construction" class="dataset-section" aria-labelledby="dataset-title">
+      <div class="wrap">
+        <p class="evidence-kicker">Dataset construction · verified dress example</p>
+        <h2 id="dataset-title" class="section-title">From Sewing Pattern to Connected Garment Mesh</h2>
+        <p class="lead">
+          The released dress is traced back to its original GarmageSet construction data. Its 2D panels and sewing topology accompany an already triangulated panel mesh; preprocessing then welds the exported seam-vertex pairs into one connected surface before semantic and structural annotation.
+        </p>
+
+        <div class="dataset-flow">
+          <article class="dataset-step">
+            <div class="dataset-step-head">
+              <span class="dataset-step-index">01 · 2D sewing pattern</span>
+              <h3>Read the true panel geometry</h3>
+              <p>Fifteen panels are reconstructed from the sample's physical 2D pattern coordinates and arranged only for readable display.</p>
+            </div>
+            <div class="dataset-media">
+              <img src="assets/dataset/dress_4140df311cf31024c3beb40f8af7c480/sewing_pattern.svg" alt="Fifteen two-dimensional sewing panels for the released dress sample" loading="lazy">
+            </div>
+          </article>
+
+          <article class="dataset-step">
+            <div class="dataset-step-head">
+              <span class="dataset-step-index">02 · Sewing topology</span>
+              <h3>Resolve the seam correspondence</h3>
+              <p>The JSON stores 59 edge-level stitches; the exported OBJ separately provides 1,549 vertex-pair records, cleaned to 1,534 unique pairs.</p>
+            </div>
+            <div class="dataset-media">
+              <img src="assets/dataset/dress_4140df311cf31024c3beb40f8af7c480/stitch_topology.svg" alt="Sampled vertex-level stitch correspondences between the dress panels" loading="lazy">
+            </div>
+          </article>
+
+          <article class="dataset-step">
+            <div class="dataset-step-head">
+              <span class="dataset-step-index">03 · Seam welding</span>
+              <h3>Build one connected surface</h3>
+              <p>Paired seam vertices are merged, their positions averaged, and all faces remapped to the welded mesh used by the annotation pipeline.</p>
+            </div>
+            <div id="datasetConnectedMesh" class="mesh-viewer" aria-label="Connected dress mesh after seam welding"></div>
+          </article>
+        </div>
+
+        <div class="dataset-stats" aria-label="Verified dataset construction statistics">
+          <div class="dataset-stat"><strong>15 → 1</strong><span>connected components</span></div>
+          <div class="dataset-stat"><strong>1,534</strong><span>clean seam pairs used</span></div>
+          <div class="dataset-stat"><strong>72,186 → 70,678</strong><span>vertices after welding</span></div>
+          <div class="dataset-stat"><strong>140,908</strong><span>triangles retained</span></div>
+        </div>
+
+        <p class="dataset-boundary">
+          <strong>Scope of this preprocessing.</strong> The raw Style3D OBJ already contains triangulated panel faces, 2D pattern coordinates, panel groups, and discrete stitch pairs. The verified project code performs seam welding; it does not recreate the raw triangulation from the pattern JSON. The stitch diagram subsamples the full correspondence set only to remain readable.
+        </p>
+        <div class="dataset-actions">
+          <a class="button primary" href="https://huggingface.co/datasets/Style3D/GarmageSet">View GarmageSet format</a>
+          <a class="button" href="https://github.com/Style3D/garmagenet-impl">Official dataset toolkit</a>
+          <a class="button" href="https://github.com/ZMC66666/3d-garment-part-understanding/tree/main/docs/assets/dataset/dress_4140df311cf31024c3beb40f8af7c480">Inspect visualization provenance</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="annotation-example" class="annotation-section" aria-labelledby="annotation-title">
+      <div class="wrap">
+        <p class="evidence-kicker">Released reproducibility example</p>
+        <div class="annotation-header">
+          <div>
+            <h2 id="annotation-title" class="section-title">From Part Labels to Structural Fields</h2>
+            <p class="lead">
+              The same dress used in the qualitative results illustrates the complete target-construction path: functional semantics define garment regions, deterministic anchor curves define structural references, and mesh geodesics produce four normalized supervision fields.
+            </p>
+          </div>
+          <div class="annotation-toolbar">
+            <label>
+              Generated field
+              <select id="annotationFieldSelect" aria-label="Annotation structural field">
+                <option value="neckline">Neck</option>
+                <option value="waistline">Waist</option>
+                <option value="hemline" selected>Hem</option>
+                <option value="cuff_union">Cuff</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="annotation-grid">
+          <article class="annotation-step">
+            <div class="annotation-step-head">
+              <span class="annotation-step-index">01 · Semantic annotation</span>
+              <h3>Assign functional parts</h3>
+              <p>Panel labels are transferred to the assembled surface in the shared 12-class vocabulary.</p>
+            </div>
+            <div id="annotationSemantic" class="mesh-viewer" aria-label="Dress semantic annotation viewer"></div>
+          </article>
+
+          <article class="annotation-step">
+            <div class="annotation-step-head">
+              <span class="annotation-step-index">02 · Structural anchors</span>
+              <h3>Construct reference curves</h3>
+              <p>Neckline, waistline, hemline, and left/right cuff vertices are mapped through stitch welding.</p>
+            </div>
+            <div id="annotationAnchors" class="mesh-viewer" aria-label="Dress structural anchor viewer"></div>
+          </article>
+
+          <article class="annotation-step">
+            <div class="annotation-step-head">
+              <span class="annotation-step-index">03 · Geodesic target</span>
+              <h3>Generate the selected field</h3>
+              <p>Multi-source mesh distance is normalized by its finite P99 value and clipped to [0,1].</p>
+            </div>
+            <div id="annotationField" class="mesh-viewer" aria-label="Generated dress structural-field viewer"></div>
+          </article>
+        </div>
+
+        <div class="anchor-legend" aria-label="Structural anchor colors">
+          <span class="anchor-key"><span class="anchor-dot" style="background:#315efb"></span>Neck</span>
+          <span class="anchor-key"><span class="anchor-dot" style="background:#f59e0b"></span>Waist</span>
+          <span class="anchor-key"><span class="anchor-dot" style="background:#0ea5a4"></span>Hem</span>
+          <span class="anchor-key"><span class="anchor-dot" style="background:#9333ea"></span>Left/right cuff</span>
+        </div>
+        <p class="annotation-note">
+          This visualization shows ground-truth target construction. At inference, the network predicts semantics and structural fields directly and does not receive these anchors.
+        </p>
+        <div class="annotation-actions">
+          <a class="button primary" href="https://github.com/ZMC66666/3d-garment-part-understanding/blob/main/tools/build_structural_fields.py">View generation code</a>
+          <a class="button" href="https://github.com/ZMC66666/3d-garment-part-understanding/tree/main/examples/dress_4140df311cf31024c3beb40f8af7c480">Download dress example</a>
+          <a class="button" href="https://github.com/ZMC66666/3d-garment-part-understanding/blob/main/docs/annotation_example.md">Read annotation details</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="technical-details" class="evidence-section" aria-labelledby="technical-title">
+      <div class="wrap">
+        <p class="evidence-kicker">Technical supplement</p>
+        <h2 id="technical-title" class="section-title">Method Details &amp; Evaluation Protocol</h2>
+        <p class="lead">
+          Follow how predicted garment semantics and structural fields determine anatomical correspondence, local deformation, and the one-sided Hem clearance constraint, then examine the Table 3 metrics.
+        </p>
+        <div class="cards">
+          <article class="card evidence-card">
+            <span class="evidence-tag">Sections 2.2–2.4</span>
+            <h3>Alignment Method</h3>
+            <p>How semantics identify anatomical support and structural fields refine relative position. Covers field construction, body coordinates, candidate selection, fallback, and the one-sided hem-clearance constraint.</p>
+            <a class="evidence-link" href="alignment_method.html">Read the method <span aria-hidden="true">&rarr;</span></a>
+          </article>
+          <article class="card evidence-card">
+            <span class="evidence-tag">Section 3.3 · Table 3</span>
+            <h3>Evaluation Protocol</h3>
+            <p>Definitions of structural mismatch, attraction gap, hem-clearance violation, penetration, shared evaluation regions, and run-level aggregation.</p>
+            <a class="evidence-link" href="evaluation_protocol.html">Read the protocol <span aria-hidden="true">&rarr;</span></a>
+          </article>
+        </div>
+        <div class="protocol-strip" aria-label="Prediction-driven alignment settings">
+          <span><strong>Geo.+Cat.</strong> geometric placement</span>
+          <span><strong>+Sem.</strong> anatomical support</span>
+          <span><strong>+Fields</strong> structural matching</span>
+          <span><strong>Hem</strong> one-sided clearance</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2 class="section-title">Method Overview</h2>
+        <p class="lead">
+          Our pipeline jointly predicts fine-grained garment-part semantics and topology-aware structural fields, then uses the predicted cues for garment-to-body alignment before dynamic try-on simulation.
+        </p>
+        <div class="figure">
+          <img
+            src="assets/overall.jpg"
+            alt="Overview of joint garment-part prediction, garment-to-body alignment, and simulation-ready virtual try-on"
+          >
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2 class="section-title">Fine-Grained Garment Part Segmentation</h2>
+        <p class="lead">
+          The task reasons about <em>parts within an individual garment</em>, rather than predicting only the garment category or original sewing-panel identity. Interactive PLY meshes below compare ground truth and prediction directly in 3D.
+        </p>
+        <div class="viewer-panel">
+          <div class="viewer-toolbar">
+            <label>
+              Garment
+              <select id="semGarmentSelect" aria-label="Semantic garment category">
+                <option value="dresses">Dress</option>
+                <option value="tops">Top</option>
+                <option value="skirts">Skirt</option>
+                <option value="pants">Pants</option>
+              </select>
+            </label>
+            <div class="viewer-hint">Drag to rotate · Scroll to zoom · Right-drag to pan</div>
+          </div>
+
+          <div class="viewer-split">
+            <div class="viewer-card">
+              <h3>Ground Truth</h3>
+              <div id="semViewerGT" class="mesh-viewer" aria-label="Semantic ground-truth 3D viewer"></div>
+            </div>
+            <div class="viewer-card">
+              <h3>Prediction</h3>
+              <div id="semViewerPred" class="mesh-viewer" aria-label="Semantic prediction 3D viewer"></div>
+            </div>
+          </div>
+
+          <p class="viewer-note">
+            Vertex colors are read directly from the PLY files. The two views are synchronized for side-by-side comparison.
+          </p>
+        </div>
+
+        <h3 style="margin:32px 0 8px;font-size:20px;">Per-Class Segmentation Results</h3>
+        <p class="small" style="margin-top:0;">
+          Per-class IoU (%). Semantic-only denotes the semantic-only PT-v3m3 baseline, while Ours adds topology-aware structural supervision with boundary weighting.
+        </p>
+        <div class="result-table-wrap">
+          <table class="result-table" aria-label="Per-class garment part IoU">
+            <thead>
+              <tr>
+                <th>Part</th>
+                <th>PT-v3m1</th>
+                <th>Semantic-only</th>
+                <th>Ours</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Body F.</td><td>79.54</td><td>84.13</td><td><strong>85.63</strong></td></tr>
+              <tr><td>Body B.</td><td>80.15</td><td>85.27</td><td><strong>86.69</strong></td></tr>
+              <tr><td>Lower F.</td><td>81.58</td><td>87.79</td><td><strong>88.92</strong></td></tr>
+              <tr><td>Lower B.</td><td>80.73</td><td>87.89</td><td><strong>88.99</strong></td></tr>
+              <tr><td>Sleeve</td><td>88.91</td><td>89.74</td><td><strong>90.76</strong></td></tr>
+              <tr><td>Collar</td><td>63.78</td><td>66.51</td><td><strong>69.88</strong></td></tr>
+              <tr><td>Waist</td><td>36.13</td><td>47.66</td><td><strong>52.31</strong></td></tr>
+              <tr><td>Cuff</td><td>35.56</td><td>44.43</td><td><strong>53.03</strong></td></tr>
+              <tr><td>Hem</td><td>48.55</td><td>48.28</td><td><strong>50.00</strong></td></tr>
+              <tr><td>Pocket</td><td>1.87</td><td>16.66</td><td><strong>19.59</strong></td></tr>
+              <tr><td>Ruffles</td><td>66.36</td><td><strong>88.87</strong></td><td>88.80</td></tr>
+              <tr><td>Hat</td><td>91.53</td><td>91.83</td><td><strong>93.46</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small" style="margin-top:14px;">
+          Since overall metrics can be dominated by large garment regions, we also report all 12 semantic classes separately. Compared with the semantic-only PT-v3m3 variant, our joint representation improves 11 of the 12 classes, with particularly clear gains on localized and structure-sensitive parts: waist improves from 47.66% to 52.31%, cuff from 44.43% to 53.03%, and collar from 66.51% to 69.88%. These results suggest that continuous topology-aware structural cues complement discrete semantic labels particularly around localized garment structures and semantic interfaces.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2 class="section-title">Topology-Aware Structural Fields</h2>
+        <p class="lead">
+          Discrete labels answer <strong>what part?</strong>; structural fields answer <strong>where within the garment structure?</strong> Select a garment and structural field to compare ground truth and prediction directly on the 3D surface.
+        </p>
+        <div class="viewer-panel">
+          <div class="viewer-toolbar">
+            <label>
+              Garment
+              <select id="fieldGarmentSelect" aria-label="Structural-field garment category">
+                <option value="dresses">Dress</option>
+                <option value="tops">Top</option>
+                <option value="skirts">Skirt</option>
+                <option value="pants">Pants</option>
+              </select>
+            </label>
+
+            <label>
+              Structural field
+              <select id="fieldTypeSelect" aria-label="Structural field type">
+                <option value="neckline">Neckline</option>
+                <option value="waistline">Waistline</option>
+                <option value="hemline">Hemline</option>
+                <option value="cuff_union">Cuff</option>
+              </select>
+            </label>
+
+            <div class="viewer-hint">Drag to rotate · Scroll to zoom · Right-drag to pan</div>
+          </div>
+
+          <div class="viewer-split">
+            <div class="viewer-card">
+              <h3>Ground Truth</h3>
+              <div id="fieldViewerGT" class="mesh-viewer" aria-label="Structural-field ground-truth 3D viewer"></div>
+            </div>
+            <div class="viewer-card">
+              <h3>Prediction</h3>
+              <div id="fieldViewerPred" class="mesh-viewer" aria-label="Structural-field prediction 3D viewer"></div>
+            </div>
+          </div>
+
+          <p class="viewer-note">
+            <span class="invalid-chip">Magenta</span> denotes an invalid structural channel.
+            Dress has all four valid channels; Top has an invalid waistline channel; Skirt and Pants have invalid neckline and cuff channels.
+            PLY vertex colors are preserved, with soft lighting added only to reveal surface shape.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2 class="section-title">Garment-to-Body Alignment</h2>
+        <p class="lead">
+          Predicted part semantics constrain anatomically valid correspondences, and predicted structural fields refine within-region placement.
+        </p>
+        <div class="alignment-grid">
+          <div class="alignment-card">
+            <h3>Dress</h3>
+            <div id="alignmentDress" class="alignment-viewer" aria-label="Aligned dress on body 3D viewer"></div>
+          </div>
+          <div class="alignment-card">
+            <h3>Top</h3>
+            <div id="alignmentTop" class="alignment-viewer" aria-label="Aligned top on body 3D viewer"></div>
+          </div>
+          <div class="alignment-card">
+            <h3>Skirt</h3>
+            <div id="alignmentSkirt" class="alignment-viewer" aria-label="Aligned skirt on body 3D viewer"></div>
+          </div>
+          <div class="alignment-card">
+            <h3>Pants</h3>
+            <div id="alignmentPants" class="alignment-viewer" aria-label="Aligned pants on body 3D viewer"></div>
+          </div>
+        </div>
+        <p class="viewer-note">
+          Interactive T-pose garment-to-body alignment examples for four garment categories. Drag to rotate, scroll to zoom, and right-drag to pan.
+        </p>
+        <div class="metrics">
+          <div class="metric"><strong>0.1261</strong><span>Structural mismatch ↓</span></div>
+          <div class="metric"><strong>14.646 mm</strong><span>Gap ↓</span></div>
+          <div class="metric"><strong>3.0519 mm</strong><span>Hem violation ↓</span></div>
+          <div class="metric"><strong>16.5071%</strong><span>Penetration ↓</span></div>
+        </div>
+        <p class="small">
+          Table 3 results for <strong>+Fields</strong> are shown above. See the <a href="evaluation_protocol.html">evaluation protocol</a> for the complete three-setting comparison, metric definitions, and shared evaluation regions, or the <a href="alignment_method.html">alignment method</a> for the correspondence and Hem-clearance algorithms.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2 class="section-title">Supplementary Material</h2>
+        <p class="lead">
+          Additional segmentation results, structural-field visualizations, simulation rollouts, evaluation details, and a runnable structural-field annotation example are available in the repository. The full training and alignment code is planned for release after acceptance.
+        </p>
+        <div class="actions" style="justify-content:flex-start">
+          <a class="button" href="alignment_method.html">Alignment method</a>
+          <a class="button" href="evaluation_protocol.html">Evaluation protocol</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      3D Garment Part Understanding · Supplementary project page
+    </div>
+  </footer>
+
+  <script>
+    const heroVideos = Array.from(document.querySelectorAll('.hero-video'));
+
+    async function startTogether() {
+      heroVideos.forEach((video) => {
+        video.muted = true;
+        video.currentTime = Number(video.dataset.start || 0);
+        video.playbackRate = Number(video.dataset.rate || 1);
+      });
+      await Promise.allSettled(heroVideos.map((video) => video.play()));
+    }
+
+    heroVideos.forEach((video) => {
+      const revealVideo = () => video.classList.add('is-ready');
+      if (video.readyState >= 2) {
+        revealVideo();
+      } else {
+        video.addEventListener('loadeddata', revealVideo, { once: true });
+      }
+
+      const start = Number(video.dataset.start || 0);
+      if (start > 0) {
+        video.addEventListener('ended', async () => {
+          video.currentTime = start;
+          try {
+            await video.play();
+          } catch (_) {}
+        });
+      }
+    });
+
+    Promise.all(
+      heroVideos.map((video) => new Promise((resolve) => {
+        if (video.readyState >= 3) {
+          resolve();
+        } else {
+          video.addEventListener('canplay', resolve, { once: true });
+        }
+      }))
+    ).then(startTogether);
+
+    // Videos start together, then each plays its complete rollout independently.
+    // This avoids truncating longer clips when different categories have different durations.
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+
+    class MeshViewer {
+      constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0xf7f8fb);
+
+        // Soft studio-style lighting: enough shading to reveal folds and geometry
+        // without overpowering the PLY vertex colors.
+        const hemi = new THREE.HemisphereLight(0xffffff, 0x667085, 1.35);
+        this.scene.add(hemi);
+
+        const keyLight = new THREE.DirectionalLight(0xffffff, 2.15);
+        keyLight.position.set(3.5, 4.5, 5.5);
+        this.scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight(0xcfe0ff, 0.75);
+        fillLight.position.set(-4.0, 1.5, 2.5);
+        this.scene.add(fillLight);
+
+        const rimLight = new THREE.DirectionalLight(0xffffff, 0.55);
+        rimLight.position.set(0.0, 3.0, -4.0);
+        this.scene.add(rimLight);
+
+        this.camera = new THREE.PerspectiveCamera(40, 1, 0.001, 1000);
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        this.container.appendChild(this.renderer.domElement);
+
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.08;
+        this.controls.screenSpacePanning = true;
+
+        this.loader = new PLYLoader();
+        this.mesh = null;
+        this.overlay = null;
+        this.peers = [];
+        this.isSyncing = false;
+        this.loadToken = 0;
+
+        this.status = document.createElement('div');
+        this.status.className = 'mesh-status';
+        this.status.textContent = 'Loading 3D mesh…';
+        this.container.appendChild(this.status);
+
+        this.controls.addEventListener('change', () => this.syncPeer());
+        this.resizeObserver = new ResizeObserver(() => this.resize());
+        this.resizeObserver.observe(this.container);
+
+        this.resize();
+        this.animate();
+      }
+
+      setPeer(peer) {
+        this.peers = [peer];
+      }
+
+      setPeers(...peers) {
+        this.peers = peers;
+      }
+
+      syncPeer() {
+        if (!this.peers.length || this.isSyncing) return;
+        this.peers.forEach((peer) => {
+          peer.isSyncing = true;
+          peer.camera.position.copy(this.camera.position);
+          peer.camera.quaternion.copy(this.camera.quaternion);
+          peer.camera.up.copy(this.camera.up);
+          peer.camera.zoom = this.camera.zoom;
+          peer.camera.updateProjectionMatrix();
+          peer.controls.target.copy(this.controls.target);
+          peer.isSyncing = false;
+        });
+      }
+
+      clearMesh() {
+        if (!this.mesh) return;
+        this.scene.remove(this.mesh);
+        this.mesh.geometry.dispose();
+        this.mesh.material.dispose();
+        this.mesh = null;
+        if (this.overlay) {
+          this.scene.remove(this.overlay);
+          this.overlay.geometry.dispose();
+          this.overlay.material.dispose();
+          this.overlay = null;
+        }
+      }
+
+      load(path, fit = true, options = {}) {
+        const token = ++this.loadToken;
+        this.status.style.display = 'flex';
+        this.status.textContent = 'Loading 3D mesh…';
+
+        this.loader.load(
+          path,
+          (geometry) => {
+            if (token !== this.loadToken) {
+              geometry.dispose();
+              return;
+            }
+
+            this.clearMesh();
+
+            if (!geometry.getAttribute('normal')) {
+              geometry.computeVertexNormals();
+            }
+
+            const hasVertexColor = Boolean(geometry.getAttribute('color')) && options.vertexColors !== false;
+            const material = new THREE.MeshPhongMaterial({
+              vertexColors: hasVertexColor,
+              color: hasVertexColor ? 0xffffff : (options.color || 0xd0d5dd),
+              shininess: 18,
+              transparent: Number(options.opacity || 1) < 1,
+              opacity: Number(options.opacity || 1),
+              side: THREE.DoubleSide
+            });
+
+            geometry.computeBoundingBox();
+            const center = new THREE.Vector3();
+            geometry.boundingBox.getCenter(center);
+            geometry.translate(-center.x, -center.y, -center.z);
+            this.modelCenter = center;
+
+            this.mesh = new THREE.Mesh(geometry, material);
+            this.scene.add(this.mesh);
+
+            if (fit) this.fitCamera(options.fitScale || 1.45);
+            if (options.overlay) this.loadOverlay(options.overlay, token);
+            this.status.style.display = 'none';
+          },
+          undefined,
+          () => {
+            if (token !== this.loadToken) return;
+            this.status.style.display = 'flex';
+            this.status.textContent = 'Could not load this PLY file.';
+          }
+        );
+      }
+
+      loadOverlay(path, token) {
+        this.loader.load(path, (geometry) => {
+          if (token !== this.loadToken || !this.modelCenter) {
+            geometry.dispose();
+            return;
+          }
+          geometry.translate(-this.modelCenter.x, -this.modelCenter.y, -this.modelCenter.z);
+          const material = new THREE.PointsMaterial({
+            size: 0.03,
+            sizeAttenuation: true,
+            vertexColors: true,
+            depthTest: false
+          });
+          this.overlay = new THREE.Points(geometry, material);
+          this.overlay.renderOrder = 2;
+          this.scene.add(this.overlay);
+        });
+      }
+
+      fitCamera(scale = 1.45) {
+        if (!this.mesh) return;
+
+        const box = new THREE.Box3().setFromObject(this.mesh);
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+
+        const fov = THREE.MathUtils.degToRad(this.camera.fov);
+        const distance = Math.max((maxDim * 0.5) / Math.tan(fov * 0.5) * scale, 0.1);
+
+        this.camera.position.set(0, 0, distance);
+        this.camera.near = Math.max(distance / 100, 0.001);
+        this.camera.far = Math.max(distance * 100, 10);
+        this.camera.updateProjectionMatrix();
+
+        this.controls.target.set(0, 0, 0);
+        this.controls.minDistance = distance * 0.18;
+        this.controls.maxDistance = distance * 8;
+        this.controls.update();
+        this.syncPeer();
+      }
+
+      resize() {
+        const width = Math.max(this.container.clientWidth, 1);
+        const height = Math.max(this.container.clientHeight, 1);
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(width, height, false);
+      }
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+        this.controls.update();
+        this.renderer.render(this.scene, this.camera);
+      }
+    }
+
+    const semanticRoots = {
+      dresses: 'assets/segmentation/dresses/4140df311cf31024c3beb40f8af7c480/',
+      tops: 'assets/segmentation/tops/627ec5c873ae9aeee6206585bdb5e015/',
+      skirts: 'assets/segmentation/skirts/d398ea6c465a72f9f5b666fb331ae7e5/',
+      pants: 'assets/segmentation/pants/3997439ee4c9381a81e4b39f210e1f66/'
+    };
+
+    const structuralRoots = {
+      dresses: 'assets/structural_fields/dresses/4140df311cf31024c3beb40f8af7c480/',
+      tops: 'assets/structural_fields/tops/627ec5c873ae9aeee6206585bdb5e015/',
+      skirts: 'assets/structural_fields/skirts/d398ea6c465a72f9f5b666fb331ae7e5/',
+      pants: 'assets/structural_fields/pants/3997439ee4c9381a81e4b39f210e1f66/'
+    };
+
+    const alignmentPaths = {
+      dress: 'assets/alignment/dresses/7ede5ae39a1a90c605de25aaabc83f5b/tpose_on_body.ply',
+      top: 'assets/alignment/tops/30628164375b24f1b56cee846177eede/tpose_on_body.ply',
+      skirt: 'assets/alignment/skirts/9e28239697d5d2a9f5261f15f0121f35/tpose_on_body.ply',
+      pants: 'assets/alignment/pants/3997439ee4c9381a81e4b39f210e1f66/tpose_on_body.ply'
+    };
+
+    const annotationDressRoot = 'assets/segmentation/dresses/4140df311cf31024c3beb40f8af7c480/';
+    const annotationFieldRoot = 'assets/structural_fields/dresses/4140df311cf31024c3beb40f8af7c480/';
+    const annotationAnchorPath = 'assets/annotation/dress_4140df311cf31024c3beb40f8af7c480/anchor_points.ply';
+
+    const datasetConnectedMesh = new MeshViewer('datasetConnectedMesh');
+    datasetConnectedMesh.load(annotationDressRoot + 'semantic_gt.ply', true, {
+      vertexColors: false,
+      color: 0xb8c2d5,
+      fitScale: 0.95
+    });
+
+    const annotationSemantic = new MeshViewer('annotationSemantic');
+    const annotationAnchors = new MeshViewer('annotationAnchors');
+    const annotationField = new MeshViewer('annotationField');
+    annotationSemantic.setPeers(annotationAnchors, annotationField);
+    annotationAnchors.setPeers(annotationSemantic, annotationField);
+    annotationField.setPeers(annotationSemantic, annotationAnchors);
+
+    annotationSemantic.load(annotationDressRoot + 'semantic_gt.ply', true, { fitScale: 0.95 });
+    annotationAnchors.load(annotationDressRoot + 'semantic_gt.ply', true, {
+      vertexColors: false,
+      color: 0xd9dee8,
+      opacity: 0.55,
+      fitScale: 0.95,
+      overlay: annotationAnchorPath
+    });
+
+    const annotationFieldSelect = document.getElementById('annotationFieldSelect');
+    function updateAnnotationField() {
+      annotationField.load(annotationFieldRoot + 'struct_' + annotationFieldSelect.value + '_gt.ply', true, { fitScale: 0.95 });
+    }
+    annotationFieldSelect.addEventListener('change', updateAnnotationField);
+    updateAnnotationField();
+
+    const semGT = new MeshViewer('semViewerGT');
+    const semPred = new MeshViewer('semViewerPred');
+    semGT.setPeer(semPred);
+    semPred.setPeer(semGT);
+
+    const fieldGT = new MeshViewer('fieldViewerGT');
+    const fieldPred = new MeshViewer('fieldViewerPred');
+    fieldGT.setPeer(fieldPred);
+    fieldPred.setPeer(fieldGT);
+
+    const alignmentDress = new MeshViewer('alignmentDress');
+    const alignmentTop = new MeshViewer('alignmentTop');
+    const alignmentSkirt = new MeshViewer('alignmentSkirt');
+    const alignmentPants = new MeshViewer('alignmentPants');
+
+    const semGarmentSelect = document.getElementById('semGarmentSelect');
+    const fieldGarmentSelect = document.getElementById('fieldGarmentSelect');
+    const fieldTypeSelect = document.getElementById('fieldTypeSelect');
+
+    function updateSemanticViewers() {
+      const root = semanticRoots[semGarmentSelect.value];
+      semGT.load(root + 'semantic_gt.ply');
+      semPred.load(root + 'semantic_pred.ply');
+    }
+
+    function updateFieldViewers() {
+      const root = structuralRoots[fieldGarmentSelect.value];
+      const field = fieldTypeSelect.value;
+      fieldGT.load(root + 'struct_' + field + '_gt.ply');
+      fieldPred.load(root + 'struct_' + field + '_pred.ply');
+    }
+
+    semGarmentSelect.addEventListener('change', updateSemanticViewers);
+    fieldGarmentSelect.addEventListener('change', updateFieldViewers);
+    fieldTypeSelect.addEventListener('change', updateFieldViewers);
+
+    updateSemanticViewers();
+    updateFieldViewers();
+    alignmentDress.load(alignmentPaths.dress);
+    alignmentTop.load(alignmentPaths.top);
+    alignmentSkirt.load(alignmentPaths.skirt);
+    alignmentPants.load(alignmentPaths.pants);
+  </script>
+
+</body>
+</html>
+

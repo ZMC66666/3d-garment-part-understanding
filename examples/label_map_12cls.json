@@ -1,0 +1,32 @@
+{
+  "labels": [
+    "body_front",
+    "body_back",
+    "lower_front",
+    "lower_back",
+    "sleeve",
+    "collar",
+    "waist",
+    "cuff",
+    "hem",
+    "pocket",
+    "ruffles",
+    "hat"
+  ],
+  "label_to_id": {
+    "body_front": 0,
+    "body_back": 1,
+    "lower_front": 2,
+    "lower_back": 3,
+    "sleeve": 4,
+    "collar": 5,
+    "waist": 6,
+    "cuff": 7,
+    "hem": 8,
+    "pocket": 9,
+    "ruffles": 10,
+    "hat": 11,
+    "body_side": 0,
+    "lower_side": 2
+  }
+}
